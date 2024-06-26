@@ -261,7 +261,7 @@ func _ManagerService_GetByGmail_Handler(srv interface{}, ctx context.Context, de
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ManagerService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "schedule_service.ManagerService",
+	ServiceName: "user_service.ManagerService",
 	HandlerType: (*ManagerServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

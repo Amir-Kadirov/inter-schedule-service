@@ -8,8 +8,7 @@ CREATE TYPE "EnglishLevel" AS ENUM (
   'Ielts'
 );
 
--- Create the Student table
-CREATE TABLE "Student" (
+CREATE TABLE IF NOT EXISTS "Student" (
   "ID" uuid PRIMARY KEY,
   "FullName" varchar(100),
   "Phone" varchar(15),
@@ -24,18 +23,15 @@ CREATE TABLE "Student" (
   "deleted_at" timestamp
 );
 
--- Create the Group_Table table
-CREATE TABLE "Group_Table" (
+CREATE TABLE IF NOT EXISTS "Group_Table" (
   "StudentID" uuid,
   "GroupID" uuid
 );
 
--- Create the Group table
-CREATE TABLE "Group" (
+CREATE TABLE IF NOT EXISTS "Group" (
   "ID" uuid PRIMARY KEY,
   "TeacherID" uuid,
   "SupportTeacherID" uuid,
-  "JournalID" uuid,
   "BranchID" uuid,
   "Type" "EnglishLevel",
   "created_at" timestamp DEFAULT now(),
@@ -43,26 +39,28 @@ CREATE TABLE "Group" (
   "deleted_at" timestamp
 );
 
--- Create the Schedule table
-CREATE TABLE "Schedule" (
+CREATE TABLE IF NOT EXISTS "Group_Many" (
+  "GroupID" uuid REFERENCES "Group" ("ID"),
+  "ScheduleID" uuid REFERENCES "Schedule" ("ID"),
+  "JournalID" uuid REFERENCES "Journal" ("ID")
+);
+
+CREATE TABLE IF NOT EXISTS "Schedule" (
   "ID" uuid PRIMARY KEY,
   "StartTime" timestamp,
   "EndTime" timestamp,
-  "JournalID" uuid,
   "LessonID" uuid,
   "created_at" timestamp DEFAULT now(),
   "updated_at" timestamp,
   "deleted_at" timestamp
 );
 
--- Create the Schedule_Lesson table
-CREATE TABLE "Schedule_Lesson" (
+CREATE TABLE IF NOT EXISTS "Schedule_Lesson" (
   "LessonID" uuid,
   "ScheduleID" uuid
 );
 
--- Create the Task table
-CREATE TABLE "Task" (
+CREATE TABLE IF NOT EXISTS "Task" (
   "ID" uuid PRIMARY KEY,
   "LessonID" uuid,
   "Label" varchar,
@@ -74,37 +72,36 @@ CREATE TABLE "Task" (
 );
 
 -- Create the Lesson_Task table
-CREATE TABLE "Lesson_Task" (
+CREATE TABLE IF NOT EXISTS "Lesson_Task" (
   "LessonID" uuid,
   "TaskID" uuid
 );
 
 -- Create the Lesson table
-CREATE TABLE "Lesson" (
+CREATE TABLE IF NOT EXISTS "Lesson" (
   "ID" uuid PRIMARY KEY,
   "Name" varchar
 );
 
 -- Create the Journal table
-CREATE TABLE "Journal" (
+CREATE TABLE IF NOT EXISTS "Journal" (
   "ID" uuid PRIMARY KEY,
   "From" timestamp,
   "To" timestamp,
-  "ScheduleID" uuid,
   "created_at" timestamp DEFAULT now(),
   "updated_at" timestamp,
   "deleted_at" timestamp
 );
 
 -- Create the Register_Event table
-CREATE TABLE "Register_Event" (
+CREATE TABLE IF NOT EXISTS "Register_Event" (
   "EventID" uuid,
   "StudentID" uuid,
   "BranchID" uuid
 );
 
 -- Create the Event table
-CREATE TABLE "Event" (
+CREATE TABLE IF NOT EXISTS "Event" (
   "ID" uuid PRIMARY KEY,
   "Topic" varchar,
   "StartTime" timestamp,
@@ -118,16 +115,15 @@ CREATE TABLE "Event" (
 -- Add foreign keys to the Student table
 ALTER TABLE "Student" ADD FOREIGN KEY ("GroupID") REFERENCES "Group" ("ID");
 
--- Add foreign keys to the Register_Event table
+ALTER TABLE "Student" ADD COLUMN "TotalSum" int;
+ALTER TABLE "Student" ADD COLUMN "Score" int;
+
 ALTER TABLE "Register_Event" ADD FOREIGN KEY ("EventID") REFERENCES "Event" ("ID");
 ALTER TABLE "Register_Event" ADD FOREIGN KEY ("StudentID") REFERENCES "Student" ("ID");
 
 -- Add foreign keys to the Group_Table table
 ALTER TABLE "Group_Table" ADD FOREIGN KEY ("StudentID") REFERENCES "Student" ("ID");
 ALTER TABLE "Group_Table" ADD FOREIGN KEY ("GroupID") REFERENCES "Group" ("ID");
-
--- Add foreign keys to the Group table
-ALTER TABLE "Group" ADD FOREIGN KEY ("JournalID") REFERENCES "Journal" ("ID");
 
 -- Add foreign keys to the Schedule table
 ALTER TABLE "Schedule" ADD FOREIGN KEY ("LessonID") REFERENCES "Lesson" ("ID");
@@ -143,10 +139,18 @@ ALTER TABLE "Task" ADD FOREIGN KEY ("LessonID") REFERENCES "Lesson" ("ID");
 ALTER TABLE "Lesson_Task" ADD FOREIGN KEY ("LessonID") REFERENCES "Lesson" ("ID");
 ALTER TABLE "Lesson_Task" ADD FOREIGN KEY ("TaskID") REFERENCES "Task" ("ID");
 
--- Add foreign keys to the Journal table
-ALTER TABLE "Journal" ADD FOREIGN KEY ("ScheduleID") REFERENCES "Schedule" ("ID");
+ALTER TABLE "Student"
+ALTER COLUMN "PaidSum"
+SET DEFAULT 0;
 
--- Create after insert trigger function for the Student table
+ALTER TABLE "Student"
+ALTER COLUMN "CourseCount"
+SET DEFAULT 0;
+
+ALTER TABLE "Student"
+ALTER COLUMN "TotalSum"
+SET DEFAULT 0;
+
 CREATE OR REPLACE FUNCTION after_insert_student()
 RETURNS TRIGGER AS $$
 BEGIN

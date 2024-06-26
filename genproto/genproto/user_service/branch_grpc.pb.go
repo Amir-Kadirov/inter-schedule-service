@@ -228,7 +228,7 @@ func _BranchService_Delete_Handler(srv interface{}, ctx context.Context, dec fun
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var BranchService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "schedule_service.BranchService",
+	ServiceName: "user_service.BranchService",
 	HandlerType: (*BranchServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

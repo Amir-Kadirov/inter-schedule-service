@@ -679,10 +679,10 @@ const (
 	CAP_LAST_CAP                                = 0x28
 	CAP_LEASE                                   = 0x1c
 	CAP_LINUX_IMMUTABLE                         = 0x9
-	CAP_MAC_ADMIN                               = 0x21
+	CAP_MAC_Student                               = 0x21
 	CAP_MAC_OVERRIDE                            = 0x20
 	CAP_MKNOD                                   = 0x1b
-	CAP_NET_ADMIN                               = 0xc
+	CAP_NET_Student                               = 0xc
 	CAP_NET_BIND_SERVICE                        = 0xa
 	CAP_NET_BROADCAST                           = 0xb
 	CAP_NET_RAW                                 = 0xd
@@ -692,7 +692,7 @@ const (
 	CAP_SETPCAP                                 = 0x8
 	CAP_SETUID                                  = 0x7
 	CAP_SYSLOG                                  = 0x22
-	CAP_SYS_ADMIN                               = 0x15
+	CAP_SYS_Student                               = 0x15
 	CAP_SYS_BOOT                                = 0x16
 	CAP_SYS_CHROOT                              = 0x12
 	CAP_SYS_MODULE                              = 0x10
@@ -1355,7 +1355,7 @@ const (
 	F_TEST                                      = 0x3
 	F_TLOCK                                     = 0x2
 	F_ULOCK                                     = 0x0
-	GENL_ADMIN_PERM                             = 0x1
+	GENL_Student_PERM                             = 0x1
 	GENL_CMD_CAP_DO                             = 0x2
 	GENL_CMD_CAP_DUMP                           = 0x4
 	GENL_CMD_CAP_HASPOL                         = 0x8
@@ -1367,7 +1367,7 @@ const (
 	GENL_MIN_ID                                 = 0x10
 	GENL_NAMSIZ                                 = 0x10
 	GENL_START_ALLOC                            = 0x13
-	GENL_UNS_ADMIN_PERM                         = 0x10
+	GENL_UNS_Student_PERM                         = 0x10
 	GRND_INSECURE                               = 0x4
 	GRND_NONBLOCK                               = 0x1
 	GRND_RANDOM                                 = 0x2

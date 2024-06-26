@@ -261,7 +261,7 @@ func _SupportTeacherService_GetByGmail_Handler(srv interface{}, ctx context.Cont
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var SupportTeacherService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "schedule_service.SupportTeacherService",
+	ServiceName: "user_service.SupportTeacherService",
 	HandlerType: (*SupportTeacherServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

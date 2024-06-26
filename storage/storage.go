@@ -2,58 +2,28 @@ package storage
 
 import (
 	"context"
-	ct "schedule_service/genproto/genproto/user_service"
+	ct "schedule_service/genproto/genproto/schedule_service"
 )
 
 type StorageI interface {
 	CloseDB()
-	Teacher() TeacherRepoI
-	SupportTeacher() SupportTeacherRepoI
-	Branch() BranchRepoI
-	Admin() AdminRepoI
-	Manager() ManagerRepoI
+	Student() StudentRepoI
+	Group() GroupRepoI
 }
 
-type TeacherRepoI interface {
-	Create(ctx context.Context, req *ct.CreateTeacher) (resp *ct.TeacherPrimaryKey, err error)
-	GetByID(ctx context.Context, req *ct.TeacherPrimaryKey) (resp *ct.Teacher, err error)
-	GetList(ctx context.Context, req *ct.GetListTeacherRequest) (resp *ct.GetListTeacherResponse, err error)
-	Update(ctx context.Context, req *ct.UpdateTeacherRequest) (resp *ct.Message, err error)
-	Delete(ctx context.Context, req *ct.TeacherPrimaryKey) (resp *ct.Message, err error)
-	GetByGmail(ctx context.Context, req *ct.TeacherGmail) (*ct.TeacherPrimaryKey, error)
+type StudentRepoI interface {
+	Create(ctx context.Context, req *ct.CreateStudent) (resp *ct.StudentPrimaryKey, err error)
+	GetByID(ctx context.Context, req *ct.StudentPrimaryKey) (resp *ct.Student, err error)
+	GetList(ctx context.Context, req *ct.GetListStudentRequest) (resp *ct.GetListStudentResponse, err error)
+	Update(ctx context.Context, req *ct.UpdateStudentRequest) (resp *ct.STMessage, err error)
+	Delete(ctx context.Context, req *ct.StudentPrimaryKey) (resp *ct.STMessage, err error)
+	GetByGmail(ctx context.Context, req *ct.StudentGmail) (*ct.StudentPrimaryKey, error)
 }
 
-type SupportTeacherRepoI interface {
-	Create(ctx context.Context, req *ct.CreateSupportTeacher) (resp *ct.SupportTeacherPrimaryKey, err error)
-	GetByID(ctx context.Context, req *ct.SupportTeacherPrimaryKey) (resp *ct.SupportTeacher, err error)
-	GetList(ctx context.Context, req *ct.GetListSupportTeacherRequest) (resp *ct.GetListSupportTeacherResponse, err error)
-	Update(ctx context.Context, req *ct.UpdateSupportTeacherRequest) (resp *ct.STMessage, err error)
-	Delete(ctx context.Context, req *ct.SupportTeacherPrimaryKey) (resp *ct.STMessage, err error)
-	GetByGmail(ctx context.Context, req *ct.SupportTeacherGmail) (*ct.SupportTeacherPrimaryKey, error)
-}
-
-type BranchRepoI interface {
-	Create(ctx context.Context, req *ct.CreateBranch) (resp *ct.BranchPrimaryKey, err error)
-	GetByID(ctx context.Context, req *ct.BranchPrimaryKey) (resp *ct.Branch, err error)
-	GetList(ctx context.Context, req *ct.GetListBranchRequest) (resp *ct.GetListBranchResponse, err error)
-	Update(ctx context.Context, req *ct.UpdateBranchRequest) (resp *ct.BMessage, err error)
-	Delete(ctx context.Context, req *ct.BranchPrimaryKey) (resp *ct.BMessage, err error)
-}
-
-type AdminRepoI interface {
-	Create(ctx context.Context, req *ct.CreateAdmin) (resp *ct.AdminPrimaryKey, err error)
-	GetByID(ctx context.Context, req *ct.AdminPrimaryKey) (resp *ct.Admin, err error)
-	GetList(ctx context.Context, req *ct.GetListAdminRequest) (resp *ct.GetListAdminResponse, err error)
-	Update(ctx context.Context, req *ct.UpdateAdminRequest) (resp *ct.ADMessage, err error)
-	Delete(ctx context.Context, req *ct.AdminPrimaryKey) (resp *ct.ADMessage, err error)
-	GetByGmail(ctx context.Context, req *ct.AdminGmail) (*ct.AdminPrimaryKey, error)
-}
-
-type ManagerRepoI interface {
-	Create(ctx context.Context, req *ct.CreateManager) (resp *ct.ManagerPrimaryKey, err error)
-	GetByID(ctx context.Context, req *ct.ManagerPrimaryKey) (resp *ct.Manager, err error)
-	GetList(ctx context.Context, req *ct.GetListManagerRequest) (resp *ct.GetListManagerResponse, err error)
-	Update(ctx context.Context, req *ct.UpdateManagerRequest) (resp *ct.MGMessage, err error)
-	Delete(ctx context.Context, req *ct.ManagerPrimaryKey) (resp *ct.MGMessage, err error)
-	GetByGmail(ctx context.Context, req *ct.ManagerGmail) (*ct.ManagerPrimaryKey, error)
+type GroupRepoI interface {
+	Create(ctx context.Context, req *ct.CreateGroup) (resp *ct.GroupPrimaryKey, err error)
+	GetByID(ctx context.Context, req *ct.GroupPrimaryKey) (resp *ct.Group, err error)
+	GetList(ctx context.Context, req *ct.GetListGroupRequest) (resp *ct.GetListGroupResponse, err error)
+	Update(ctx context.Context, req *ct.UpdateGroupRequest) (resp *ct.GRMessage, err error)
+	Delete(ctx context.Context, req *ct.GroupPrimaryKey) (resp *ct.GRMessage, err error)
 }

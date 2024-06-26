@@ -1437,7 +1437,7 @@ type MibIfRow struct {
 	Speed           uint32
 	PhysAddrLen     uint32
 	PhysAddr        [MAXLEN_PHYSADDR]byte
-	AdminStatus     uint32
+	StudentStatus   uint32
 	OperStatus      uint32
 	LastChange      uint32
 	InOctets        uint32

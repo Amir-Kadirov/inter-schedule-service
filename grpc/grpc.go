@@ -2,7 +2,7 @@ package grpc
 
 import (
 	"schedule_service/config"
-	"schedule_service/genproto/genproto/user_service"
+	"schedule_service/genproto/genproto/schedule_service"
 	"schedule_service/grpc/client"
 	"schedule_service/grpc/service"
 	"schedule_service/storage"
@@ -16,15 +16,9 @@ func SetUpServer(cfg config.Config, log logger.LoggerI, strg storage.StorageI, s
 
 	grpcServer = grpc.NewServer()
 
-	user_service.RegisterTeacherServiceServer(grpcServer, service.NewTeacherService(cfg, log, strg, srvc))
+	schedule_service.RegisterGroupServiceServer(grpcServer, service.NewGroupService(cfg, log, strg, srvc))
 
-	user_service.RegisterBranchServiceServer(grpcServer, service.NewBranchService(cfg, log, strg, srvc))
-
-	user_service.RegisterSupportTeacherServiceServer(grpcServer, service.NewSupportTeacherService(cfg, log, strg, srvc))
-
-	user_service.RegisterAdminServiceServer(grpcServer, service.NewAdminService(cfg, log, strg, srvc))
-
-	user_service.RegisterManagerServiceServer(grpcServer, service.NewManagerService(cfg, log, strg, srvc))
+	schedule_service.RegisterStudentServiceServer(grpcServer, service.NewStudentService(cfg, log, strg, srvc))
 
 	reflection.Register(grpcServer)
 	return

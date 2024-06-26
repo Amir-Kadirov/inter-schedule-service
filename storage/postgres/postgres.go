@@ -12,12 +12,9 @@ import (
 )
 
 type Store struct {
-	db             *pgxpool.Pool
-	teacher        storage.TeacherRepoI
-	supportteacher storage.SupportTeacherRepoI
-	branch         storage.BranchRepoI
-	admin          storage.AdminRepoI
-	manager        storage.ManagerRepoI
+	db      *pgxpool.Pool
+	student storage.StudentRepoI
+	group storage.GroupRepoI
 }
 
 func NewPostgres(ctx context.Context, cfg config.Config) (storage.StorageI, error) {
@@ -58,42 +55,18 @@ func (l *Store) Log(ctx context.Context, level pgx.LogLevel, msg string, data ma
 	log.Println(args...)
 }
 
-func (s *Store) Teacher() storage.TeacherRepoI {
-	if s.teacher == nil {
-		s.teacher = NewTeacherRepo(s.db)
+func (s *Store) Student() storage.StudentRepoI {
+	if s.student == nil {
+		s.student = NewStudentRepo(s.db)
 	}
 
-	return s.teacher
+	return s.student
 }
 
-func (s *Store) SupportTeacher() storage.SupportTeacherRepoI {
-	if s.supportteacher == nil {
-		s.supportteacher = NewSupportTeacherRepo(s.db)
+func (s *Store) Group() storage.GroupRepoI {
+	if s.group == nil {
+		s.group = NewGroupRepo(s.db)
 	}
 
-	return s.supportteacher
-}
-
-func (s *Store) Branch() storage.BranchRepoI {
-	if s.branch == nil {
-		s.branch = NewBranchRepo(s.db)
-	}
-
-	return s.branch
-}
-
-func (s *Store) Admin() storage.AdminRepoI {
-	if s.admin == nil {
-		s.admin = NewAdminRepo(s.db)
-	}
-
-	return s.admin
-}
-
-func (s *Store) Manager() storage.ManagerRepoI {
-	if s.manager == nil {
-		s.manager = NewManagerRepo(s.db)
-	}
-
-	return s.manager
+	return s.group
 }
