@@ -9,6 +9,7 @@ type StorageI interface {
 	CloseDB()
 	Student() StudentRepoI
 	Group() GroupRepoI
+	Lesson() LessonRepoI
 }
 
 type StudentRepoI interface {
@@ -26,4 +27,12 @@ type GroupRepoI interface {
 	GetList(ctx context.Context, req *ct.GetListGroupRequest) (resp *ct.GetListGroupResponse, err error)
 	Update(ctx context.Context, req *ct.UpdateGroupRequest) (resp *ct.GRMessage, err error)
 	Delete(ctx context.Context, req *ct.GroupPrimaryKey) (resp *ct.GRMessage, err error)
+}
+
+type LessonRepoI interface {
+	Create(ctx context.Context, req *ct.CreateLesson) (resp *ct.LessonPrimaryKey, err error)
+	GetByID(ctx context.Context, req *ct.LessonPrimaryKey) (resp *ct.Lesson, err error)
+	GetList(ctx context.Context, req *ct.GetListLessonRequest) (resp *ct.GetListLessonResponse, err error)
+	Update(ctx context.Context, req *ct.UpdateLessonRequest) (resp *ct.LSMessage, err error)
+	Delete(ctx context.Context, req *ct.LessonPrimaryKey) (resp *ct.LSMessage, err error)
 }

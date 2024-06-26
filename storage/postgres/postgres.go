@@ -15,6 +15,7 @@ type Store struct {
 	db      *pgxpool.Pool
 	student storage.StudentRepoI
 	group storage.GroupRepoI
+	lesson storage.LessonRepoI
 }
 
 func NewPostgres(ctx context.Context, cfg config.Config) (storage.StorageI, error) {
@@ -69,4 +70,12 @@ func (s *Store) Group() storage.GroupRepoI {
 	}
 
 	return s.group
+}
+
+func (s *Store) Lesson() storage.LessonRepoI {
+	if s.lesson == nil {
+		s.lesson = NewLessonRepo(s.db)
+	}
+
+	return s.lesson
 }

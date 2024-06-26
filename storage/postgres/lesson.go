@@ -12,54 +12,45 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-type GroupRepo struct {
+type LessonRepo struct {
 	db *pgxpool.Pool
 }
 
-func NewGroupRepo(db *pgxpool.Pool) storage.GroupRepoI {
-	return &GroupRepo{
+func NewLessonRepo(db *pgxpool.Pool) storage.LessonRepoI {
+	return &LessonRepo{
 		db: db,
 	}
 }
 
-func (c *GroupRepo) Create(ctx context.Context, req *ct.CreateGroup) (*ct.GroupPrimaryKey, error) {
+func (c *LessonRepo) Create(ctx context.Context, req *ct.CreateLesson) (*ct.LessonPrimaryKey, error) {
 	id := uuid.NewString()
-	resp := &ct.GroupPrimaryKey{Id: id}
+	resp := &ct.LessonPrimaryKey{Id: id}
 
-	query := `INSERT INTO "Group" (
+	query := `INSERT INTO "Lesson" (
 			"ID",
-			"TeacherID",
-			"SupportTeacherID",
-			"BranchID",
-			"Type",	
+			"Name",
 			"created_at") VALUES (
 				$1,
 				$2,
-				$3,
-				$4,
-				$5,
 				NOW()
 			)`
 
-	_, err := c.db.Exec(ctx, query, id, req.TeacherId, req.SupportTeacherId, req.Branchid, req.Type)
+	_, err := c.db.Exec(ctx, query, id, req.Name)
 	if err != nil {
-		log.Println("error while creating Group")
+		log.Println("error while creating Lesson")
 		return nil, err
 	}
 
 	return resp, err
 }
 
-func (c *GroupRepo) GetByID(ctx context.Context, req *ct.GroupPrimaryKey) (*ct.Group, error) {
-	resp := &ct.Group{}
+func (c *LessonRepo) GetByID(ctx context.Context, req *ct.LessonPrimaryKey) (*ct.Lesson, error) {
+	resp := &ct.Lesson{}
 	query := `SELECT "ID",
-					 "TeacherID",
-					 "SupportTeacherID",
-					 "BranchID",
-					 "Type",
+					 "Name",
 					 "created_at",
 					 "updated_at"
-			FROM "Group"
+			FROM "Lesson"
 			WHERE "ID"=$1 AND "deleted_at" is null`
 
 	row := c.db.QueryRow(ctx, query, req.Id)
@@ -67,10 +58,7 @@ func (c *GroupRepo) GetByID(ctx context.Context, req *ct.GroupPrimaryKey) (*ct.G
 	var updatedAt, createdAt sql.NullTime
 	if err := row.Scan(
 		&resp.Id,
-		&resp.TeacherId,
-		&resp.SupportTeacherId,
-		&resp.Branchid,
-		&resp.Type,
+		&resp.Name,
 		&createdAt,
 		&updatedAt); err != nil {
 		return nil, err
@@ -82,8 +70,8 @@ func (c *GroupRepo) GetByID(ctx context.Context, req *ct.GroupPrimaryKey) (*ct.G
 	return resp, nil
 }
 
-func (c *GroupRepo) GetList(ctx context.Context, req *ct.GetListGroupRequest) (*ct.GetListGroupResponse, error) {
-	resp := &ct.GetListGroupResponse{}
+func (c *LessonRepo) GetList(ctx context.Context, req *ct.GetListLessonRequest) (*ct.GetListLessonResponse, error) {
+	resp := &ct.GetListLessonResponse{}
 	if req.Offset == 0 {
 		req.Offset = 1
 	}
@@ -92,18 +80,15 @@ func (c *GroupRepo) GetList(ctx context.Context, req *ct.GetListGroupRequest) (*
 	offset := (req.Offset - 1) * req.Limit
 
 	if req.Search != "" {
-		filter = ` AND "Type" ILIKE '%` + req.Search + `%' `
+		filter = ` AND "Name" ILIKE '%` + req.Search + `%' `
 	}
 
 	query := `SELECT 
 					 "ID",
-					 "TeacherID",
-					 "SupportTeacherID",
-					 "BranchID",
-					 "Type",
+					 "Name",
 					 "created_at",
 					 "updated_at"
-			FROM "Group"
+			FROM "Lesson"
         	WHERE "deleted_at" is null AND TRUE ` + filter + `
            OFFSET $1 LIMIT $2
     `
@@ -115,25 +100,22 @@ func (c *GroupRepo) GetList(ctx context.Context, req *ct.GetListGroupRequest) (*
 	defer rows.Close()
 
 	for rows.Next() {
-		Group := &ct.Group{}
+		Lesson := &ct.Lesson{}
 		var createdAt, updatedAt sql.NullTime
 		if err := rows.Scan(
-			&Group.Id,
-			&Group.TeacherId,
-			&Group.SupportTeacherId,
-			&Group.Branchid,
-			&Group.Type,
+			&Lesson.Id,
+			&Lesson.Name,
 			&createdAt,
 			&updatedAt); err != nil {
 			return nil, err
 		}
 
-		Group.CreatedAt = helper.NullTimeStampToString(createdAt)
-		Group.UpdatedAt = helper.NullTimeStampToString(updatedAt)
-		resp.Group = append(resp.Group, Group)
+		Lesson.CreatedAt = helper.NullTimeStampToString(createdAt)
+		Lesson.UpdatedAt = helper.NullTimeStampToString(updatedAt)
+		resp.Lesson = append(resp.Lesson, Lesson)
 	}
 
-	queryCount := `SELECT COUNT(*) FROM "Group" WHERE "deleted_at" is null AND TRUE ` + filter
+	queryCount := `SELECT COUNT(*) FROM "Lesson" WHERE "deleted_at" is null AND TRUE ` + filter
 	err = c.db.QueryRow(ctx, queryCount).Scan(&resp.Count)
 	if err != nil {
 		return nil, err
@@ -142,16 +124,13 @@ func (c *GroupRepo) GetList(ctx context.Context, req *ct.GetListGroupRequest) (*
 	return resp, nil
 }
 
-func (c *GroupRepo) Update(ctx context.Context, req *ct.UpdateGroupRequest) (*ct.GRMessage, error) {
-	resp := &ct.GRMessage{Message: "Group updated successfully"}
-	query := `UPDATE "Group" SET
-					 			 "TeacherID"=$1,
-					 			 "SupportTeacherID"=$2,
-					 			 "BranchID"=$3,
-					 			 "Type"=$4,
+func (c *LessonRepo) Update(ctx context.Context, req *ct.UpdateLessonRequest) (*ct.LSMessage, error) {
+	resp := &ct.LSMessage{Message: "Lesson updated successfully"}
+	query := `UPDATE "Lesson" SET
+					 			 "Name"=$1,
 								 "updated_at"=NOW()
-								 WHERE "ID"=$5 AND "deleted_at" is null`
-	_, err := c.db.Exec(ctx, query, req.TeacherId, req.SupportTeacherId, req.Branchid, req.Type)
+								 WHERE "ID"=$2 AND "deleted_at" is null`
+	_, err := c.db.Exec(ctx, query, req.Name,req.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -159,9 +138,9 @@ func (c *GroupRepo) Update(ctx context.Context, req *ct.UpdateGroupRequest) (*ct
 	return resp, nil
 }
 
-func (c *GroupRepo) Delete(ctx context.Context, req *ct.GroupPrimaryKey) (*ct.GRMessage, error) {
-	resp := &ct.GRMessage{Message: "Group deleted successfully"}
-	query := `UPDATE "Group" SET
+func (c *LessonRepo) Delete(ctx context.Context, req *ct.LessonPrimaryKey) (*ct.LSMessage, error) {
+	resp := &ct.LSMessage{Message: "Lesson deleted successfully"}
+	query := `UPDATE "Lesson" SET
 							 "deleted_at"=NOW()
 							 WHERE "ID"=$1 AND "deleted_at" is null RETURNING "created_at"`
 
