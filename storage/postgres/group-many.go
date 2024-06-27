@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"log"
 	ct "schedule_service/genproto/genproto/schedule_service"
+	"schedule_service/genproto/genproto/user_service"
+	"schedule_service/grpc/client"
 	"schedule_service/pkg/helper"
 	"schedule_service/storage"
 
@@ -12,7 +14,8 @@ import (
 )
 
 type GroupManyRepo struct {
-	db *pgxpool.Pool
+	db       *pgxpool.Pool
+	services client.ServiceManagerI
 }
 
 func NewGroupManyRepo(db *pgxpool.Pool) storage.GroupManyRepoI {
@@ -35,7 +38,7 @@ func (c *GroupManyRepo) Create(ctx context.Context, req *ct.CreateGroupMany) (*c
 				$3
 			)`
 
-	_, err := c.db.Exec(ctx, query, req.GroupId,req.ScheduleId,req.JournalId)
+	_, err := c.db.Exec(ctx, query, req.GroupId, req.ScheduleId, req.JournalId)
 	if err != nil {
 		log.Println("error while creating GroupMany")
 		return nil, err
@@ -44,9 +47,10 @@ func (c *GroupManyRepo) Create(ctx context.Context, req *ct.CreateGroupMany) (*c
 	return resp, err
 }
 
-func (c *GroupManyRepo) ScheduleM(ctx context.Context,req *ct.Empty) (*ct.ScheduleMonth,error) {
-	resp:=&ct.ScheduleMonth{}
-	query:=`SELECT 
+func (c *GroupManyRepo) ScheduleM(ctx context.Context, req *ct.Empty) (*ct.ScheduleMonth, error) {
+	resp := &ct.ScheduleMonth{}
+
+	query := `SELECT 
 				    gr."ID",
 				    gr."Type",
 				    sch."StartTime",
@@ -69,21 +73,44 @@ func (c *GroupManyRepo) ScheduleM(ctx context.Context,req *ct.Empty) (*ct.Schedu
 				    gr."TeacherID",
 				    gr."SupportTeacherID";
 				`
-	var starttime,endtime sql.NullTime
-	err:=c.db.QueryRow(ctx,query).Scan(
-		&resp.GroupID,
-		&resp.GroupType,
-		&starttime,
-		&endtime,
-		&resp.BranchID,
-		&resp.TeacherID,
-		&resp.SupportTeacherID,
-		&resp.StudentCount)
+	row, err := c.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
 	}
-	resp.StartTime=helper.NullTimeStampToString(starttime)
-	resp.EndTime=helper.NullTimeStampToString(endtime)
 
-	return resp,nil
+	for row.Next() {
+		var starttime, endtime sql.NullTime
+		scheduleMonth := &ct.SchMonth{}
+		if err := row.Scan(
+			&scheduleMonth.GroupID,
+			&scheduleMonth.GroupType,
+			&starttime,
+			&endtime,
+			&scheduleMonth.BranchName,
+			&scheduleMonth.TeacherName,
+			&scheduleMonth.SupportTeacherName); err != nil {
+			return nil, err
+		}
+		scheduleMonth.StartTime=helper.NullTimeStampToString(starttime)
+		scheduleMonth.EndTime=helper.NullTimeStampToString(endtime)
+		branch,err:=c.services.BranchService().GetByID(ctx,&user_service.BranchPrimaryKey{Id: scheduleMonth.BranchName})
+		if err != nil {
+			return nil, err
+		}
+		teacher,err:=c.services.TeacherService().GetByID(ctx,&user_service.TeacherPrimaryKey{Id: scheduleMonth.TeacherName})
+		if err != nil {
+			return nil, err
+		}
+		supportteacher,err:=c.services.SupportTeacherService().GetByID(ctx,&user_service.SupportTeacherPrimaryKey{Id: scheduleMonth.SupportTeacherName})
+		if err != nil {
+			return nil, err
+		}
+		scheduleMonth.BranchName=branch.Address
+		scheduleMonth.TeacherName=teacher.Fullname
+		scheduleMonth.SupportTeacherName=supportteacher.Fullname
+
+		resp.SchMonth=append(resp.SchMonth, scheduleMonth)
+	}
+
+	return resp, nil
 }

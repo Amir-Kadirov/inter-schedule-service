@@ -26,6 +26,7 @@ func (c *ScheduleRepo) Create(ctx context.Context, req *ct.CreateSchedule) (*ct.
 	id := uuid.NewString()
 	resp := &ct.SchedulePrimaryKey{Id: id}
 
+
 	query := `INSERT INTO "Schedule" (
 			"ID",
 			"EndTime",
