@@ -11,6 +11,9 @@ type StorageI interface {
 	Group() GroupRepoI
 	Lesson() LessonRepoI
 	Task() TaskRepoI
+	Journal() JournalRepoI
+	Schedule() ScheduleRepoI
+	GroupMany() GroupManyRepoI
 }
 
 type StudentRepoI interface {
@@ -45,4 +48,25 @@ type TaskRepoI interface {
 	Update(ctx context.Context, req *ct.UpdateTask) (resp *ct.TSMessage, err error)
 	Delete(ctx context.Context, req *ct.TaskPrimaryKey) (resp *ct.TSMessage, err error)
 	DoTask(ctx context.Context,req *ct.DoTaskReq) (*ct.TSMessage,error)
+}
+
+type JournalRepoI interface {
+	Create(ctx context.Context, req *ct.CreateJournal) (resp *ct.JournalPrimaryKey, err error)
+	GetByID(ctx context.Context, req *ct.JournalPrimaryKey) (resp *ct.Journal, err error)
+	GetList(ctx context.Context, req *ct.GetListJournalRequest) (resp *ct.GetListJournalResponse, err error)
+	Update(ctx context.Context, req *ct.UpdateJournalRequest) (resp *ct.JRMessage, err error)
+	Delete(ctx context.Context, req *ct.JournalPrimaryKey) (resp *ct.JRMessage, err error)
+}
+
+type ScheduleRepoI interface {
+	Create(ctx context.Context, req *ct.CreateSchedule) (resp *ct.SchedulePrimaryKey, err error)
+	GetByID(ctx context.Context, req *ct.SchedulePrimaryKey) (resp *ct.Schedule, err error)
+	GetList(ctx context.Context, req *ct.GetListScheduleRequest) (resp *ct.GetListScheduleResponse, err error)
+	Update(ctx context.Context, req *ct.UpdateScheduleRequest) (resp *ct.SHMessage, err error)
+	Delete(ctx context.Context, req *ct.SchedulePrimaryKey) (resp *ct.SHMessage, err error)
+}
+
+type GroupManyRepoI interface {
+	Create(ctx context.Context, req *ct.CreateGroupMany) (resp *ct.GMMessage, err error)
+	ScheduleM(ctx context.Context,req *ct.Empty) (*ct.ScheduleMonth,error)
 }

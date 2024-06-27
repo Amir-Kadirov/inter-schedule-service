@@ -183,11 +183,11 @@ func (c *TaskRepo) Delete(ctx context.Context, req *ct.TaskPrimaryKey) (*ct.TSMe
 func (c *TaskRepo) DoTask(ctx context.Context,req *ct.DoTaskReq) (*ct.TSMessage,error) {
 	resp:=&ct.TSMessage{Message: "Task Completed Successfully"}
 	query:=`UPDATE "Task" SET 
-							"Label"=$1,
+							"DoTask"=$1,
 							"Status"=TRUE,
 							updated_at=NOW()
-							WHERE "ID"=$2 AND "deleted_at is null"`
-	_,err:=c.db.Exec(ctx,query,req.Label,req.Id)
+							WHERE "ID"=$2 AND "deleted_at" is null`
+	_,err:=c.db.Exec(ctx,query,req.DoTask,req.Id)
 	if err != nil {
 		return nil, err
 	}

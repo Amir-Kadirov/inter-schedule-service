@@ -138,6 +138,9 @@ ALTER TABLE "Schedule_Lesson" ADD FOREIGN KEY ("ScheduleID") REFERENCES "Schedul
 
 -- Add foreign keys to the Task table
 ALTER TABLE "Task" ADD FOREIGN KEY ("LessonID") REFERENCES "Lesson" ("ID");
+
+ALTER TABLE "Task" ADD COLUMN "DoTask" varchar;
+
 ALTER TABLE "Task"
 ALTER COLUMN "Deadline" TYPE DATE USING "Deadline"::DATE;
 ALTER TABLE "Task" ADD COLUMN "Status" BOOLEAN;

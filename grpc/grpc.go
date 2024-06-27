@@ -24,6 +24,13 @@ func SetUpServer(cfg config.Config, log logger.LoggerI, strg storage.StorageI, s
 
 	schedule_service.RegisterTaskServiceServer(grpcServer,service.NewTaskService(cfg,log,strg,srvc))
 
+	schedule_service.RegisterJournalServiceServer(grpcServer,service.NewJournalService(cfg,log,strg,srvc))
+
+	schedule_service.RegisterScheduleServiceServer(grpcServer,service.NewScheduleService(cfg,log,strg,srvc))
+
+	schedule_service.RegisterGroupManyServiceServer(grpcServer,service.NewGroupManyService(cfg,log,strg,srvc))
+
+
 	reflection.Register(grpcServer)
 	return
 }

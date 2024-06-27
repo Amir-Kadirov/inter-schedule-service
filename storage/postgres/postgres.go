@@ -17,6 +17,9 @@ type Store struct {
 	group storage.GroupRepoI
 	lesson storage.LessonRepoI
 	task storage.TaskRepoI
+	journal storage.JournalRepoI
+	schedule storage.ScheduleRepoI
+	groupmany storage.GroupManyRepoI
 }
 
 func NewPostgres(ctx context.Context, cfg config.Config) (storage.StorageI, error) {
@@ -88,4 +91,29 @@ func (s *Store) Task() storage.TaskRepoI {
 	}
 
 	return s.task
+}
+
+func (s *Store) Journal() storage.JournalRepoI {
+	if s.journal == nil {
+		s.journal = NewJournalRepo(s.db)
+	}
+
+	return s.journal
+}
+
+
+func (s *Store) Schedule() storage.ScheduleRepoI {
+	if s.schedule == nil {
+		s.schedule = NewScheduleRepo(s.db)
+	}
+
+	return s.schedule
+}
+
+func (s *Store) GroupMany() storage.GroupManyRepoI {
+	if s.groupmany == nil {
+		s.groupmany = NewGroupManyRepo(s.db)
+	}
+
+	return s.groupmany
 }
