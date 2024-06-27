@@ -16,6 +16,7 @@ type Store struct {
 	student storage.StudentRepoI
 	group storage.GroupRepoI
 	lesson storage.LessonRepoI
+	task storage.TaskRepoI
 }
 
 func NewPostgres(ctx context.Context, cfg config.Config) (storage.StorageI, error) {
@@ -78,4 +79,13 @@ func (s *Store) Lesson() storage.LessonRepoI {
 	}
 
 	return s.lesson
+}
+
+
+func (s *Store) Task() storage.TaskRepoI {
+	if s.task == nil {
+		s.task = NewTaskRepo(s.db)
+	}
+
+	return s.task
 }

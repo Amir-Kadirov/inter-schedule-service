@@ -138,10 +138,21 @@ ALTER TABLE "Schedule_Lesson" ADD FOREIGN KEY ("ScheduleID") REFERENCES "Schedul
 
 -- Add foreign keys to the Task table
 ALTER TABLE "Task" ADD FOREIGN KEY ("LessonID") REFERENCES "Lesson" ("ID");
+ALTER TABLE "Task"
+ALTER COLUMN "Deadline" TYPE DATE USING "Deadline"::DATE;
+ALTER TABLE "Task" ADD COLUMN "Status" BOOLEAN;
 
 -- Add foreign keys to the Lesson_Task table
 ALTER TABLE "Lesson_Task" ADD FOREIGN KEY ("LessonID") REFERENCES "Lesson" ("ID");
 ALTER TABLE "Lesson_Task" ADD FOREIGN KEY ("TaskID") REFERENCES "Task" ("ID");
+
+ALTER TABLE "Task"
+ALTER COLUMN "Status"
+SET DEFAULT FALSE;
+
+ALTER TABLE "Task"
+ALTER COLUMN "Score"
+SET DEFAULT 0;
 
 ALTER TABLE "Student"
 ALTER COLUMN "PaidSum"

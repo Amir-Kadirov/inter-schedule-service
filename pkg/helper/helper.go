@@ -16,6 +16,7 @@ func NullTimeStampToString(s sql.NullTime) string {
 }
 
 
+
 func NullDateToString(s sql.NullTime) string  {
 	if s.Valid {
 		return s.Time.Format("2006-01-02")

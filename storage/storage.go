@@ -10,6 +10,7 @@ type StorageI interface {
 	Student() StudentRepoI
 	Group() GroupRepoI
 	Lesson() LessonRepoI
+	Task() TaskRepoI
 }
 
 type StudentRepoI interface {
@@ -35,4 +36,13 @@ type LessonRepoI interface {
 	GetList(ctx context.Context, req *ct.GetListLessonRequest) (resp *ct.GetListLessonResponse, err error)
 	Update(ctx context.Context, req *ct.UpdateLessonRequest) (resp *ct.LSMessage, err error)
 	Delete(ctx context.Context, req *ct.LessonPrimaryKey) (resp *ct.LSMessage, err error)
+}
+
+type TaskRepoI interface {
+	Create(ctx context.Context, req *ct.CreateTask) (resp *ct.TaskPrimaryKey, err error)
+	GetByID(ctx context.Context, req *ct.TaskPrimaryKey) (resp *ct.Task, err error)
+	GetList(ctx context.Context, req *ct.GetListTaskRequest) (resp *ct.GetListTaskResponse, err error)
+	Update(ctx context.Context, req *ct.UpdateTask) (resp *ct.TSMessage, err error)
+	Delete(ctx context.Context, req *ct.TaskPrimaryKey) (resp *ct.TSMessage, err error)
+	DoTask(ctx context.Context,req *ct.DoTaskReq) (*ct.TSMessage,error)
 }
