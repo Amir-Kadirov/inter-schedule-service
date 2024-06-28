@@ -149,6 +149,9 @@ ALTER TABLE "Task" ADD COLUMN "Status" BOOLEAN;
 ALTER TABLE "Lesson_Task" ADD FOREIGN KEY ("LessonID") REFERENCES "Lesson" ("ID");
 ALTER TABLE "Lesson_Task" ADD FOREIGN KEY ("TaskID") REFERENCES "Task" ("ID");
 
+ALTER TABLE "Event" 
+ALTER COLUMN "StartTime" TYPE time USING "StartTime"::time;
+
 ALTER TABLE "Task"
 ALTER COLUMN "Status"
 SET DEFAULT FALSE;

@@ -15,7 +15,15 @@ func NullTimeStampToString(s sql.NullTime) string {
 	return ""
 }
 
-
+func NullTimeToString(s sql.NullString) string {
+	str:=""
+	if s.Valid {
+		str= s.String
+	} else {
+		str= ""
+	}
+	return str
+}
 
 func NullDateToString(s sql.NullTime) string  {
 	if s.Valid {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"schedule_service/config"
+	"schedule_service/grpc/client"
 	"schedule_service/storage"
 
 	"github.com/jackc/pgx/v4"
@@ -13,6 +14,7 @@ import (
 
 type Store struct {
 	db      *pgxpool.Pool
+	services client.ServiceManagerI
 	student storage.StudentRepoI
 	group storage.GroupRepoI
 	lesson storage.LessonRepoI
@@ -20,6 +22,7 @@ type Store struct {
 	journal storage.JournalRepoI
 	schedule storage.ScheduleRepoI
 	groupmany storage.GroupManyRepoI
+	event storage.EventRepoI
 }
 
 func NewPostgres(ctx context.Context, cfg config.Config) (storage.StorageI, error) {
@@ -112,8 +115,16 @@ func (s *Store) Schedule() storage.ScheduleRepoI {
 
 func (s *Store) GroupMany() storage.GroupManyRepoI {
 	if s.groupmany == nil {
-		s.groupmany = NewGroupManyRepo(s.db)
+		s.groupmany = NewGroupManyRepo(s.db,s.services)
 	}
 
 	return s.groupmany
+}
+
+func (s *Store) Event() storage.EventRepoI {
+	if s.event==nil {
+		s.event=NewEventRepo(s.db)
+	}
+
+	return s.event
 }

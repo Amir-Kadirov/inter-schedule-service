@@ -14,6 +14,7 @@ type StorageI interface {
 	Journal() JournalRepoI
 	Schedule() ScheduleRepoI
 	GroupMany() GroupManyRepoI
+	Event() EventRepoI
 }
 
 type StudentRepoI interface {
@@ -69,4 +70,13 @@ type ScheduleRepoI interface {
 type GroupManyRepoI interface {
 	Create(ctx context.Context, req *ct.CreateGroupMany) (resp *ct.GMMessage, err error)
 	ScheduleM(ctx context.Context,req *ct.Empty) (*ct.ScheduleMonth,error)
+}
+
+type EventRepoI interface {
+	Create(ctx context.Context, req *ct.CreateEvent) (resp *ct.EventPrimaryKey, err error)
+	GetByID(ctx context.Context, req *ct.EventPrimaryKey) (resp *ct.Event, err error)
+	GetList(ctx context.Context, req *ct.GetListEventRequest) (resp *ct.GetListEventResponse, err error)
+	Update(ctx context.Context, req *ct.UpdateEventRequest) (resp *ct.EVMessage, err error)
+	Delete(ctx context.Context, req *ct.EventPrimaryKey) (resp *ct.EVMessage, err error)
+	RegisterEvent(ctx context.Context,req *ct.RegisterEv) (*ct.EVMessage,error)
 }

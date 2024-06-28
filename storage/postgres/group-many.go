@@ -18,9 +18,10 @@ type GroupManyRepo struct {
 	services client.ServiceManagerI
 }
 
-func NewGroupManyRepo(db *pgxpool.Pool) storage.GroupManyRepoI {
+func NewGroupManyRepo(db *pgxpool.Pool,service client.ServiceManagerI) storage.GroupManyRepoI {
 	return &GroupManyRepo{
 		db: db,
+		services: service,
 	}
 }
 
@@ -88,7 +89,8 @@ func (c *GroupManyRepo) ScheduleM(ctx context.Context, req *ct.Empty) (*ct.Sched
 			&endtime,
 			&scheduleMonth.BranchName,
 			&scheduleMonth.TeacherName,
-			&scheduleMonth.SupportTeacherName); err != nil {
+			&scheduleMonth.SupportTeacherName,
+			&scheduleMonth.StudentCount); err != nil {
 			return nil, err
 		}
 		scheduleMonth.StartTime=helper.NullTimeStampToString(starttime)
@@ -109,7 +111,7 @@ func (c *GroupManyRepo) ScheduleM(ctx context.Context, req *ct.Empty) (*ct.Sched
 		scheduleMonth.TeacherName=teacher.Fullname
 		scheduleMonth.SupportTeacherName=supportteacher.Fullname
 
-		resp.SchMonth=append(resp.SchMonth, scheduleMonth)
+		resp.SMonth=append(resp.SMonth, scheduleMonth)
 	}
 
 	return resp, nil
