@@ -28,7 +28,6 @@ func (c *EventRepo) Create(ctx context.Context, req *ct.CreateEvent) (*ct.EventP
 	id := uuid.NewString()
 	resp := &ct.EventPrimaryKey{Id: id}
 
-	// Проверка, что день недели является воскресеньем
 	date, err := time.Parse("2006-01-02", req.Day)
 	if err != nil {
 		return nil, err
@@ -38,7 +37,6 @@ func (c *EventRepo) Create(ctx context.Context, req *ct.CreateEvent) (*ct.EventP
 		return nil, errors.New("wrong day: valid only Sunday")
 	}
 
-	// Проверка наличия уже существующего события
 	querySelect := `SELECT 1 FROM "Event" WHERE "BranchID"=$1 AND "Day"=$2 AND "StartTime"=$3`
 	var exists int
 	_ = c.db.QueryRow(ctx, querySelect, req.BranchId, req.Day, req.Starttime).Scan(&exists)
@@ -47,7 +45,6 @@ func (c *EventRepo) Create(ctx context.Context, req *ct.CreateEvent) (*ct.EventP
 	    return nil, errors.New("event already exists")
 	}
 
-	// Вставка нового события
 	query := `INSERT INTO "Event" (
 		"ID",
 		"Topic",
@@ -207,7 +204,47 @@ func (c *EventRepo) Delete(ctx context.Context, req *ct.EventPrimaryKey) (*ct.EV
 
 func (c *EventRepo) RegisterEvent(ctx context.Context,req *ct.RegisterEv) (*ct.EVMessage,error) {
 	resp:=&ct.EVMessage{Message: "Registered Successfully"}
-	// queryRegister:=`SELECT * FROM "Register_Event" re 
-	// 						      JOIN `
+	queryEvent:=`SELECT "StartTime","Day" FROM "Event" WHERE "ID"=$1`
+
+	var (evTime sql.NullString
+		evDay sql.NullTime)
+	err:=c.db.QueryRow(ctx,queryEvent,req.EventId).Scan(&evTime,&evDay)
+	if err != nil {
+		return nil, err
+	}
+
+	EvTime:=helper.NullTimeToString(evTime)
+	EvDay:=helper.NullDateToString(evDay)
+
+	queryRegister:=`SELECT ev."StartTime",ev."Day" FROM "Register_Event" re
+							      JOIN "Event" ev ON ev."ID"=re."EventID" WHERE re."StudentID"=$1`
+	row,err:=c.db.Query(ctx,queryRegister,req.StudentId)
+	if err != nil {
+		return nil, err
+	}
+	for row.Next(){
+		var (starttime sql.NullString
+			day sql.NullTime)
+		if err:=row.Scan(&starttime,&day);err!=nil{
+			return nil,err
+		}
+
+		if helper.NullTimeToString(starttime)==EvTime && helper.NullDateToString(day)==EvDay {
+			return nil,errors.New("student already registered for event at this time")
+		}
+	}
+
+	queryInsert:=`INSERT INTO "Register_Event"(
+									"EventID",
+									"StudentID"
+									) VALUES (
+									 $1,
+									 $2
+									)`
+	_,err=c.db.Exec(ctx,queryInsert,req.EventId,req.StudentId)
+	if err != nil {
+		return nil, err
+	}
+
 	return resp,nil	
 }

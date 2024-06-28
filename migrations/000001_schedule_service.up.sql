@@ -96,9 +96,8 @@ CREATE TABLE IF NOT EXISTS "Journal" (
 -- Create the Register_Event table
 CREATE TABLE IF NOT EXISTS "Register_Event" (
   "EventID" uuid,
-  "StudentID" uuid,
-  "BranchID" uuid
-);
+  "StudentID" uuid
+  );
 
 -- Create the Event table
 CREATE TABLE IF NOT EXISTS "Event" (
