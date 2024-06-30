@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	ct "schedule_service/genproto/genproto/schedule_service"
 	"schedule_service/pkg/helper"
@@ -28,14 +29,7 @@ func (c *EventRepo) Create(ctx context.Context, req *ct.CreateEvent) (*ct.EventP
 	id := uuid.NewString()
 	resp := &ct.EventPrimaryKey{Id: id}
 
-	date, err := time.Parse("2006-01-02", req.Day)
-	if err != nil {
-		return nil, err
-	}
-
-	if date.Weekday() != time.Sunday {
-		return nil, errors.New("wrong day: valid only Sunday")
-	}
+	
 
 	querySelect := `SELECT 1 FROM "Event" WHERE "BranchID"=$1 AND "Day"=$2 AND "StartTime"=$3`
 	var exists int
@@ -60,7 +54,7 @@ func (c *EventRepo) Create(ctx context.Context, req *ct.CreateEvent) (*ct.EventP
 			NOW()
 		)`
 
-	_, err = c.db.Exec(ctx, query, id, req.Topic, req.Starttime, req.Day, req.BranchId)
+	_, err := c.db.Exec(ctx, query, id, req.Topic, req.Starttime, req.Day, req.BranchId)
 	if err != nil {
 		log.Println("error while creating Event")
 		return nil, err
@@ -212,6 +206,19 @@ func (c *EventRepo) RegisterEvent(ctx context.Context,req *ct.RegisterEv) (*ct.E
 	if err != nil {
 		return nil, err
 	}
+
+	if evTime.Valid && evDay.Valid {
+		eventDateTimeStr := evDay.Time.Format("2006-01-02") + " " + evTime.String
+		eventDateTime, err := time.Parse("2006-01-02 15:04:05", eventDateTimeStr)
+		if err != nil {
+			return nil, err
+		}
+	
+		if eventDateTime.Sub(time.Now()) < 3*time.Hour {
+			return nil, fmt.Errorf("cannot register for the event as less than 3 hours remain")
+		}
+	}
+
 
 	EvTime:=helper.NullTimeToString(evTime)
 	EvDay:=helper.NullDateToString(evDay)

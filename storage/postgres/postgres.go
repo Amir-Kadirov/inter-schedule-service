@@ -23,6 +23,7 @@ type Store struct {
 	schedule storage.ScheduleRepoI
 	groupmany storage.GroupManyRepoI
 	event storage.EventRepoI
+	attendence	storage.AttendanceRepoI
 }
 
 func NewPostgres(ctx context.Context, cfg config.Config) (storage.StorageI, error) {
@@ -127,4 +128,12 @@ func (s *Store) Event() storage.EventRepoI {
 	}
 
 	return s.event
+}
+
+func (s *Store) Attendance() storage.AttendanceRepoI {
+	if s.attendence==nil {
+		s.attendence=NewAttendanceRepo(s.db)
+	}
+
+	return s.attendence
 }

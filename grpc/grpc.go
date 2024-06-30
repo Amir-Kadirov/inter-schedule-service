@@ -32,6 +32,9 @@ func SetUpServer(cfg config.Config, log logger.LoggerI, strg storage.StorageI, s
 
 	schedule_service.RegisterEventServiceServer(grpcServer,service.NewEventService(cfg,log,strg,srvc))
 
+	schedule_service.RegisterAttendanceServiceServer(grpcServer,service.NewAttendanceService(cfg,log,strg,srvc))
+
+
 
 	reflection.Register(grpcServer)
 	return

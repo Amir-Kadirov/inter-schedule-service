@@ -83,6 +83,12 @@ CREATE TABLE IF NOT EXISTS "Lesson" (
   "Name" varchar
 );
 
+CREATE TABLE IF NOT EXISTS "Attendance"(
+   "StudentID" uuid,
+   "LessonID" uuid,
+   "Status" BOOLEAN DEFAULT FALSE
+);
+
 -- Create the Journal table
 CREATE TABLE IF NOT EXISTS "Journal" (
   "ID" uuid PRIMARY KEY,
@@ -120,6 +126,9 @@ ALTER TABLE "Student" ADD COLUMN "Score" int;
 ALTER TABLE "Lesson" ADD COLUMN "created_at" timestamp DEFAULT NOW();
 ALTER TABLE "Lesson" ADD COLUMN "deleted_at" timestamp;
 ALTER TABLE "Lesson" ADD COLUMN "updated_at" timestamp;
+
+ALTER TABLE "Attendance" ADD FOREIGN KEY ("StudentID") REFERENCES "Student" ("ID");
+ALTER TABLE "Attendance" ADD FOREIGN KEY ("LessonID") REFERENCES "Lesson" ("ID");
 
 ALTER TABLE "Register_Event" ADD FOREIGN KEY ("EventID") REFERENCES "Event" ("ID");
 ALTER TABLE "Register_Event" ADD FOREIGN KEY ("StudentID") REFERENCES "Student" ("ID");

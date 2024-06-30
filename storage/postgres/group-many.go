@@ -72,7 +72,7 @@ func (c *GroupManyRepo) ScheduleM(ctx context.Context, req *ct.Empty) (*ct.Sched
 				    sch."EndTime",
 				    gr."BranchID",
 				    gr."TeacherID",
-				    gr."SupportTeacherID";
+				    gr."SupportTeacherID"
 				`
 	row, err := c.db.Query(ctx, query)
 	if err != nil {

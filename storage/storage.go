@@ -15,6 +15,7 @@ type StorageI interface {
 	Schedule() ScheduleRepoI
 	GroupMany() GroupManyRepoI
 	Event() EventRepoI
+	Attendance() AttendanceRepoI
 }
 
 type StudentRepoI interface {
@@ -79,4 +80,10 @@ type EventRepoI interface {
 	Update(ctx context.Context, req *ct.UpdateEventRequest) (resp *ct.EVMessage, err error)
 	Delete(ctx context.Context, req *ct.EventPrimaryKey) (resp *ct.EVMessage, err error)
 	RegisterEvent(ctx context.Context,req *ct.RegisterEv) (*ct.EVMessage,error)
+}
+
+type AttendanceRepoI interface {
+	Create(ctx context.Context, req *ct.CreateAttendance) (*ct.ATMessage, error)
+	GetByID(ctx context.Context, req *ct.AttendancePrimaryKey) (*ct.Attendance, error)
+	GetList(ctx context.Context, req *ct.GetListAttendanceRequest) (*ct.GetListAttendanceResponse, error)
 }
