@@ -209,13 +209,76 @@ func (c *StudentRepo) Delete(ctx context.Context, req *ct.StudentPrimaryKey) (*c
 	return resp, nil
 }
 
-func (c *StudentRepo) GetByGmail(ctx context.Context, req *ct.StudentGmail) (*ct.StudentPrimaryKey, error) {
-	query := `SELECT "ID" FROM "Student" WHERE "Email"=$1`
-	var id string
-	err := c.db.QueryRow(ctx, query, req.Gmail).Scan(&id)
+func (c *StudentRepo) GetByGmail(ctx context.Context, req *ct.StudentGmail) (*ct.StudentGmailRes, error) {
+	resp:=&ct.StudentGmailRes{}
+	query := `SELECT "ID","Password" FROM "Student" WHERE "Email"=$1`
+	err := c.db.QueryRow(ctx, query, req.Gmail).Scan(&resp.Gmail,&resp.Password)
 	if err != nil {
 		return nil, err
 	}
 
-	return &ct.StudentPrimaryKey{Id: id}, nil
+	return resp, nil
+}
+
+
+func (c *StudentRepo) StudentReport(ctx context.Context, req *ct.GetListStudentRequest) (*ct.GetRepStudent, error) {
+	resp := &ct.GetRepStudent{}
+	if req.Offset == 0 {
+		req.Offset = 1
+	}
+
+	filter := ""
+	offset := (req.Offset - 1) * req.Limit
+
+	if req.Search != "" {
+		filter = ` AND "BranchID" ILIKE '%` + req.Search + `%' `
+	}
+
+	query := `SELECT 
+					"ID",
+					"FullName",
+					"Phone",
+					"PaidSum",
+					"CourseCount",
+					"TotalSum",
+					"created_at",
+					"updated_at"
+			FROM "Student"
+        	WHERE "deleted_at" is null AND TRUE ` + filter + `
+           OFFSET $1 LIMIT $2
+    `
+
+	rows, err := c.db.Query(ctx, query, offset, req.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		Student := &ct.StudentRep{}
+		var createdAt, updatedAt sql.NullTime
+		if err := rows.Scan(
+			&Student.Id,
+			&Student.Fullname,
+			&Student.Phone,
+			&Student.PaidSum,
+			&Student.CourseCount,
+			&Student.TotalSum,
+			&createdAt,
+			&updatedAt); err != nil {
+			return nil, err
+		}
+
+		Student.CreatedAt = helper.NullTimeStampToString(createdAt)
+		Student.UpdatedAt = helper.NullTimeStampToString(updatedAt)
+		resp.Student = append(resp.Student, Student)
+	}
+
+	queryCount := `SELECT COUNT(*) FROM "Student" WHERE "deleted_at" is null AND TRUE ` + filter
+	err = c.db.QueryRow(ctx, queryCount).Scan(&resp.Count)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }

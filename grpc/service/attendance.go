@@ -20,7 +20,7 @@ type AttendanceService struct {
 
 func NewAttendanceService(cfg config.Config, log logger.LoggerI, strg storage.StorageI, srvs client.ServiceManagerI) *AttendanceService {
 	return &AttendanceService{
-		cfg:      cfg,
+		cfg:      cfg,	
 		log:      log,
 		strg:     strg,
 		services: srvs,

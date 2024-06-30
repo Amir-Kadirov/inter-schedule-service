@@ -36,7 +36,7 @@ type SupportTeacherServiceClient interface {
 	GetList(ctx context.Context, in *GetListSupportTeacherRequest, opts ...grpc.CallOption) (*GetListSupportTeacherResponse, error)
 	Update(ctx context.Context, in *UpdateSupportTeacherRequest, opts ...grpc.CallOption) (*STMessage, error)
 	Delete(ctx context.Context, in *SupportTeacherPrimaryKey, opts ...grpc.CallOption) (*STMessage, error)
-	GetByGmail(ctx context.Context, in *SupportTeacherGmail, opts ...grpc.CallOption) (*SupportTeacherPrimaryKey, error)
+	GetByGmail(ctx context.Context, in *SupportTeacherGmail, opts ...grpc.CallOption) (*SupportTeacherGmailRes, error)
 }
 
 type supportTeacherServiceClient struct {
@@ -92,8 +92,8 @@ func (c *supportTeacherServiceClient) Delete(ctx context.Context, in *SupportTea
 	return out, nil
 }
 
-func (c *supportTeacherServiceClient) GetByGmail(ctx context.Context, in *SupportTeacherGmail, opts ...grpc.CallOption) (*SupportTeacherPrimaryKey, error) {
-	out := new(SupportTeacherPrimaryKey)
+func (c *supportTeacherServiceClient) GetByGmail(ctx context.Context, in *SupportTeacherGmail, opts ...grpc.CallOption) (*SupportTeacherGmailRes, error) {
+	out := new(SupportTeacherGmailRes)
 	err := c.cc.Invoke(ctx, SupportTeacherService_GetByGmail_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -110,7 +110,7 @@ type SupportTeacherServiceServer interface {
 	GetList(context.Context, *GetListSupportTeacherRequest) (*GetListSupportTeacherResponse, error)
 	Update(context.Context, *UpdateSupportTeacherRequest) (*STMessage, error)
 	Delete(context.Context, *SupportTeacherPrimaryKey) (*STMessage, error)
-	GetByGmail(context.Context, *SupportTeacherGmail) (*SupportTeacherPrimaryKey, error)
+	GetByGmail(context.Context, *SupportTeacherGmail) (*SupportTeacherGmailRes, error)
 	mustEmbedUnimplementedSupportTeacherServiceServer()
 }
 
@@ -133,7 +133,7 @@ func (UnimplementedSupportTeacherServiceServer) Update(context.Context, *UpdateS
 func (UnimplementedSupportTeacherServiceServer) Delete(context.Context, *SupportTeacherPrimaryKey) (*STMessage, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (UnimplementedSupportTeacherServiceServer) GetByGmail(context.Context, *SupportTeacherGmail) (*SupportTeacherPrimaryKey, error) {
+func (UnimplementedSupportTeacherServiceServer) GetByGmail(context.Context, *SupportTeacherGmail) (*SupportTeacherGmailRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetByGmail not implemented")
 }
 func (UnimplementedSupportTeacherServiceServer) mustEmbedUnimplementedSupportTeacherServiceServer() {}

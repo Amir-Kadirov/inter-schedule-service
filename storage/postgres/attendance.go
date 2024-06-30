@@ -6,7 +6,6 @@ import (
 	ct "schedule_service/genproto/genproto/schedule_service"
 	"schedule_service/storage"
 
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
@@ -21,18 +20,18 @@ func NewAttendanceRepo(db *pgxpool.Pool) storage.AttendanceRepoI {
 }
 
 func (c *AttendanceRepo) Create(ctx context.Context, req *ct.CreateAttendance) (*ct.ATMessage, error) {
-	id := uuid.NewString()
 	resp := &ct.ATMessage{Message: "Attendance created successfully"}
 	query := `INSERT INTO "Attendance" (
 			"StudentID",
 			"LessonID",
-			"Status") VALUES (
+			"Status"
+			) VALUES (
 				$1,
 				$2,
-				$3,
+				$3
 			)`
 
-	_, err := c.db.Exec(ctx, query, id, req.StudentId,req.LessonId,req.Status)
+	_, err := c.db.Exec(ctx, query, req.StudentId,req.LessonId,req.Status)
 	if err != nil {
 		log.Println("error while creating Attendance")
 

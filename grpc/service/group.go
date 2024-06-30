@@ -2,8 +2,10 @@ package service
 
 import (
 	"context"
+	"errors"
 	"schedule_service/config"
 	"schedule_service/genproto/genproto/schedule_service"
+	"schedule_service/genproto/genproto/user_service"
 	"schedule_service/grpc/client"
 	"schedule_service/storage"
 
@@ -29,6 +31,11 @@ func NewGroupService(cfg config.Config, log logger.LoggerI, strg storage.Storage
 func (c *GroupService) Create(ctx context.Context, req *schedule_service.CreateGroup) (*schedule_service.GroupPrimaryKey, error) {
 
 	c.log.Info("---CreateGroup--->>>", logger.Any("req", req))
+
+	_,err:=c.services.BranchService().GetByID(ctx,&user_service.BranchPrimaryKey{Id: req.Branchid})
+	if err != nil {
+		return nil,  errors.New("wrong branch id")
+	}
 
 	resp, err := c.strg.Group().Create(ctx, req)
 	if err != nil {

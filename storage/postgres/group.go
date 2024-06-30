@@ -3,8 +3,8 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"log"
 	ct "schedule_service/genproto/genproto/schedule_service"
+	"schedule_service/grpc/client"
 	"schedule_service/pkg/helper"
 	"schedule_service/storage"
 
@@ -14,17 +14,20 @@ import (
 
 type GroupRepo struct {
 	db *pgxpool.Pool
+	services client.ServiceManagerI
 }
 
-func NewGroupRepo(db *pgxpool.Pool) storage.GroupRepoI {
+func NewGroupRepo(db *pgxpool.Pool,service client.ServiceManagerI) storage.GroupRepoI {
 	return &GroupRepo{
 		db: db,
+		services: service,
 	}
 }
 
 func (c *GroupRepo) Create(ctx context.Context, req *ct.CreateGroup) (*ct.GroupPrimaryKey, error) {
 	id := uuid.NewString()
 	resp := &ct.GroupPrimaryKey{Id: id}
+
 
 	query := `INSERT INTO "Group" (
 			"ID",
@@ -43,7 +46,6 @@ func (c *GroupRepo) Create(ctx context.Context, req *ct.CreateGroup) (*ct.GroupP
 
 	_, err := c.db.Exec(ctx, query, id, req.TeacherId, req.SupportTeacherId, req.Branchid, req.Type)
 	if err != nil {
-		log.Println("error while creating Group")
 		return nil, err
 	}
 

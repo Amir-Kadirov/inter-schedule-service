@@ -74,7 +74,7 @@ func (s *Store) Student() storage.StudentRepoI {
 
 func (s *Store) Group() storage.GroupRepoI {
 	if s.group == nil {
-		s.group = NewGroupRepo(s.db)
+		s.group = NewGroupRepo(s.db,s.services)
 	}
 
 	return s.group
@@ -136,4 +136,8 @@ func (s *Store) Attendance() storage.AttendanceRepoI {
 	}
 
 	return s.attendence
+}
+
+func (s Store) GetDB() *pgxpool.Pool {
+	return s.db
 }

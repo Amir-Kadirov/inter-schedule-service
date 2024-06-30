@@ -3,6 +3,8 @@ package storage
 import (
 	"context"
 	ct "schedule_service/genproto/genproto/schedule_service"
+
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 type StorageI interface {
@@ -16,6 +18,7 @@ type StorageI interface {
 	GroupMany() GroupManyRepoI
 	Event() EventRepoI
 	Attendance() AttendanceRepoI
+	GetDB() *pgxpool.Pool
 }
 
 type StudentRepoI interface {
@@ -24,7 +27,8 @@ type StudentRepoI interface {
 	GetList(ctx context.Context, req *ct.GetListStudentRequest) (resp *ct.GetListStudentResponse, err error)
 	Update(ctx context.Context, req *ct.UpdateStudentRequest) (resp *ct.STMessage, err error)
 	Delete(ctx context.Context, req *ct.StudentPrimaryKey) (resp *ct.STMessage, err error)
-	GetByGmail(ctx context.Context, req *ct.StudentGmail) (*ct.StudentPrimaryKey, error)
+	GetByGmail(ctx context.Context, req *ct.StudentGmail) (*ct.StudentGmailRes, error)
+	StudentReport(ctx context.Context, req *ct.GetListStudentRequest) (*ct.GetRepStudent, error)
 }
 
 type GroupRepoI interface {
@@ -70,7 +74,6 @@ type ScheduleRepoI interface {
 
 type GroupManyRepoI interface {
 	Create(ctx context.Context, req *ct.CreateGroupMany) (resp *ct.GMMessage, err error)
-	ScheduleM(ctx context.Context,req *ct.Empty) (*ct.ScheduleMonth,error)
 }
 
 type EventRepoI interface {

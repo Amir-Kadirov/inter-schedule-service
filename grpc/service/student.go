@@ -87,12 +87,25 @@ func (c *StudentService) Delete(ctx context.Context, req *schedule_service.Stude
 	return resp, nil
 }
 
-func (c *StudentService) GetByGmail(ctx context.Context, req *schedule_service.StudentGmail) (*schedule_service.StudentPrimaryKey, error) {
+func (c *StudentService) GetByGmail(ctx context.Context, req *schedule_service.StudentGmail) (*schedule_service.StudentGmailRes, error) {
 	c.log.Info("---GetByGmailStudent--->>>", logger.Any("req", req))
 
 	resp, err := c.strg.Student().GetByGmail(ctx, req)
 	if err != nil {
 		c.log.Error("---GetByGmailStudent--->>>", logger.Error(err))
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+
+func (c *StudentService) StudentReport(ctx context.Context, req *schedule_service.GetListStudentRequest) (*schedule_service.GetRepStudent, error) {
+	c.log.Info("---GetAllStudent--->>>", logger.Any("req", req))
+
+	resp, err := c.strg.Student().StudentReport(ctx, req)
+	if err != nil {
+		c.log.Error("---GetAllStudent--->>>", logger.Error(err))
 		return nil, err
 	}
 
